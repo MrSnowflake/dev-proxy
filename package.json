@@ -1,0 +1,24 @@
+{
+  "name": "dev-proxy",
+  "version": "0.2.0",
+  "description": "Development proxy",
+  "main": "proxy.js",
+  "dependencies": {
+    "hoxy": "^1.2.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://Maarten.Krijn@git.amplexor.com/scm/~maarten.krijn/dev-proxy.git"
+  },
+  "keywords": [
+    "nodejs",
+    "javascript",
+    "proxy"
+  ],
+  "author": "Maarten Krijn",
+  "license": "MIT"
+}
