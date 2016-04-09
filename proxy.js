@@ -35,6 +35,7 @@ function route(item) {
 }
 
 console.log('starting');
+
 for (var index = 0; index < config.length; index++) {
 	var configItem = config[index];
 	
