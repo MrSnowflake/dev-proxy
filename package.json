@@ -6,7 +6,10 @@
   "dependencies": {
     "hoxy": "^1.2.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
