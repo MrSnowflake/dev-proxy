@@ -2,8 +2,8 @@
 
 var fs = require('fs');
 var path = require('path');
-var hoxy = require('hoxy');
-var proxy = new hoxy.Proxy().listen(8080);
+let hoxy = require('hoxy');
+let proxyServer = hoxy.createServer();
 
 var filePath = '/Users/maarten.krijn/amplexor/Projects/GEA/';
 
@@ -27,23 +27,18 @@ function action(item) {
 	}
 }
 
-function route(item) {
-	proxy.intercept({
-			phase: 'response',
-			fullUrl: item.path,
-			as: 'string'
-		}, action(item)
-	);
-}
-
 console.log('starting');
 
-for (var index = 0; index < config.length; index++) {
-	var configItem = config[index];
-	
-	route(configItem);
-}
-
+let setupProxy = function() {
+	let proxy = proxyServer.listen(8888,function () {
+	  console.log('Proxy listening on port 8888!');
+	});
+	proxy.intercept({
+		phase: 'response'
+	}, function(req, resp, cycle) {
+		console.log(req);
+	});
+};
 
 var express = require('express');
 var app = express();
@@ -101,12 +96,16 @@ app.post('/routes', function (req, res) {
 	res.status(201).send({message:'Created'});
 });
 
+let isValidRoute = function(route) {
+	return route.path && route.localPath && route.domain;
+}
+
 app.put('/routes/:id', function (req, res) {
 	let newRoute = req.body;
 	
 	res.type('json');
 	
-	if (!newRoute.path || !newRoute.localPath) {
+	if (!isValidRoute(newRoute)) {
 		let error = {};
 		error.message = "Invalid route. Provide all fields.";
 		res.status(403).send(error);
@@ -143,8 +142,6 @@ app.delete('/routes/:id', function (req, res) {
 		return;
 	}
 
-
-
 	let oldRoute = routes[req.params.id];
 	delete routesByPath[oldRoute.path];
 	delete routes[req.params.id];
@@ -153,6 +150,8 @@ app.delete('/routes/:id', function (req, res) {
 
 	res.status(200).send({message:'Ok'});
 });
+
+setupProxy();
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');

@@ -4,7 +4,7 @@
   "description": "Development proxy",
   "main": "proxy.js",
   "dependencies": {
-    "hoxy": "^1.2.4"
+    "hoxy": "3.2.0"
   },
   "devDependencies": {
     "body-parser": "^1.15.0",
