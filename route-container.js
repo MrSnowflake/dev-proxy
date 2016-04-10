@@ -5,6 +5,10 @@ module.exports = () => {
 	const routesById = {};
 	let maxId = 0;
 	
+	const isNumber = n => {
+		return !isNaN(parseFloat(n)) && isFinite(n);
+	};
+
 	const isValidRoute = route => {
 		return route.path && route.localPath && route.domain;
 	};
@@ -71,8 +75,11 @@ module.exports = () => {
 
 			delete routesById[routeId];
 		},
-		hasRoute: routeId => {
-			return !!routesById[routeId];
+		hasRoute: route => {
+			if (isNumber(route))
+				return !!routesById[route];
+			else
+				return routeExists(route);
 		}
 	};
 

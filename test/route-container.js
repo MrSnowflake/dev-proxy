@@ -77,12 +77,13 @@ exports['test RouteContainer#get multiple'] = function(beforeExit, assert) {
     	domain: 'google.com'
     });
 
-    routeContainer.add({
-    	path: '/js/*',
-    	localPath: 'local/path/',
-    	domain: 'google.com'
+    assert.throws(() => {
+	    routeContainer.add({
+	    	path: '/js/*',
+	    	localPath: 'local/path/',
+	    	domain: 'google.com'
+	    });
     });
-
     assert.eql(false, routeContainer.hasRoute(1));
 
     let route = routeContainer.get(0);
