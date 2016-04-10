@@ -96,10 +96,6 @@ app.post('/routes', function (req, res) {
 	res.status(201).send({message:'Created'});
 });
 
-let isValidRoute = function(route) {
-	return route.path && route.localPath && route.domain;
-}
-
 app.put('/routes/:id', function (req, res) {
 	let newRoute = req.body;
 	
