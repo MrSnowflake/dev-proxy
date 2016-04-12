@@ -62,6 +62,9 @@ module.exports = () => {
 		get: route => {
 			return routesById[route];
 		},
+		getForDomain: domain => {
+			return routeDomains[domain];
+		},
 		delete: routeId => {
 			if (!self.hasRoute(routeId))
 				throw 'Route not found';
