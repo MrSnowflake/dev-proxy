@@ -10,7 +10,17 @@ module.exports = () => {
 	};
 
 	const isValidRoute = route => {
-		return route.path && route.localPath && route.domain;
+		return !!route && route.path && route.localPath && route.domain;
+	};
+
+	const mergeRoute = (routeId, route) => {
+		let oldRoute = routesById[routeId];
+
+		route.path = route.path || oldRoute.path;
+		route.localPath = route.localPath || oldRoute.localPath;
+		route.domain = route.domain || oldRoute.domain;
+
+		return route;
 	};
 
 	const getRoutesFor = route => {
@@ -22,7 +32,7 @@ module.exports = () => {
 		}
 
 		return routes;
-	}
+	};
 
 	const routeExists = route => {
 		let routes = getRoutesFor(route);
@@ -33,9 +43,8 @@ module.exports = () => {
 		add: route => {
 			if (!isValidRoute(route))
 				throw "Invalid route";
-			 else if (routeExists(route)) {
+			else if (routeExists(route))
 				throw 'Route already exists';
-			}
 
 			let routes = getRoutesFor(route);
 
@@ -46,12 +55,14 @@ module.exports = () => {
 			maxId++;
 		},
 		put: (routeId, route) => {
-			if (!isValidRoute(route))
-				throw "Invalid route";
-
-			let routes = getRoutesFor(route);
-
 			let oldRoute = routesById[routeId];
+
+			route = mergeRoute(routeId, route);
+
+			if (!isValidRoute(route))	
+				throw "Invalid route";
+			
+			let routes = getRoutesFor(route);
 
 			delete routes[oldRoute.path];
 
@@ -60,6 +71,9 @@ module.exports = () => {
 			routesById[route.id] = route;
 		},
 		get: route => {
+			if (!route) {
+				return routesById;
+			}
 			return routesById[route];
 		},
 		getForDomain: domain => {
