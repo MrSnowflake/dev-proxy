@@ -29,14 +29,24 @@ function action(item) {
 
 console.log('starting');
 
-let setupProxy = function() {
-	let proxy = proxyServer.listen(8888,function () {
+let routeContainer = require('./route-container.js')();
+
+let execute = domainRoutes => {
+	console.debug(domainRoutes);
+};
+
+let setupProxy = () => {
+	let proxy = proxyServer.listen(8888, () => {
 	  console.log('Proxy listening on port 8888!');
 	});
 	proxy.intercept({
 		phase: 'response'
 	}, function(req, resp, cycle) {
 		console.log(req);
+		let domainRoutes = routeContainer.getForDomain(req.hostname);
+		if (domainRoutes) {
+			execute(domainRoutes);
+		}
 	});
 };
 
@@ -91,8 +101,6 @@ app.post('/routes', function (req, res) {
 
 	maxId++;
 	
-	route(newRoute);
-
 	res.status(201).send({message:'Created'});
 });
 
