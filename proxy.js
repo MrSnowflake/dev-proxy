@@ -5,35 +5,14 @@ var path = require('path');
 let hoxy = require('hoxy');
 let proxyServer = hoxy.createServer();
 
-var filePath = '/Users/maarten.krijn/amplexor/Projects/GEA/';
-
-var config = [
-	{ path: 'http://preview-gea.dev.amplexor.com/js/*', localPath: '/Users/maarten.krijn/amplexor/Projects/GEA/'},
-	{ path: 'http://preview-gea.dev.amplexor.com/css/*', localPath: '/Users/maarten.krijn/amplexor/Projects/GEA/'}
-];
-
-function action(item) {
-	return function(req, response, done) {
-		var file = path.join(item.localPath, req.url);
-		console.log('send', file);
-		fs.readFile(file, {encoding: 'utf-8'}, function(err,data){
-			if (!err) {
-				response.string = data;
-			} else {
-				console.log(err);
-			}
-			done();
-		});
-	}
-}
-
 console.log('starting');
 
 let routeContainer = require('./route-container.js')();
 
-let execute = domainRoutes => {
-	console.debug(domainRoutes);
-};
+const getFilename = path => {
+	let segments = path.split('/');
+	return segments[segments.length - 1];
+}
 
 let setupProxy = () => {
 	let proxy = proxyServer.listen(8888, () => {
@@ -42,10 +21,29 @@ let setupProxy = () => {
 	proxy.intercept({
 		phase: 'response'
 	}, function(req, resp, cycle) {
-		console.log(req);
+		//console.log(req);
+		
 		let domainRoutes = routeContainer.getForDomain(req.hostname);
+		
 		if (domainRoutes) {
-			execute(domainRoutes);
+			console.log('domainRoutes', req.hostname, domainRoutes);
+			for (var routePath in domainRoutes) {
+				var route = domainRoutes[routePath];
+				if (domainRoutes.hasOwnProperty(routePath) && req.url.match(route.path).length > 0) {
+					let filename = getFilename(req.url);
+					let file = path.join(route.localPath, filename);
+
+					console.log('send', file);
+					
+					fs.readFile(file, { encoding: 'utf-8' }, (err,data) => {
+						if (!err) {
+							resp.string = data;
+						} else {
+							console.log(err);
+						}
+					});
+				}
+			}
 		}
 	});
 };
@@ -63,6 +61,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 
 app.get('/routes', function (req, res) {
 	let routesArray = [];
+	let routes = routeContainer.get();
 
 	for (var route in routes) {
 	    if (routes.hasOwnProperty(route)) {
@@ -82,25 +81,8 @@ app.post('/routes', function (req, res) {
 	
 	res.type('json');
 	
-	if (!newRoute.path || !newRoute.localPath) {
-		let error = {};
-		error.message = "Invalid route. Provide all fields.";
-		res.status(403).send(error);
-		return;
-	} else if (routesByPath[newRoute.path]) {
-		let error = {};
-		error.message = "Route already exists. If updating use PUT.";
-		res.status(409).send(error);
-		return;
-	}
+	routeContainer.add(newRoute);
 
-	newRoute.id = maxId;
-	console.log(newRoute);
-	routes[maxId] = newRoute;
-	routesByPath[newRoute.path] = newRoute;
-
-	maxId++;
-	
 	res.status(201).send({message:'Created'});
 });
 
@@ -109,27 +91,7 @@ app.put('/routes/:id', function (req, res) {
 	
 	res.type('json');
 	
-	if (!isValidRoute(newRoute)) {
-		let error = {};
-		error.message = "Invalid route. Provide all fields.";
-		res.status(403).send(error);
-		return;
-	} else if (!routes[req.params.id]) {
-		let error = {};
-		error.message = "Route not found.";
-		res.status(404).send(error);
-		return;
-	}
-
-	let oldRoute = routes[req.params.id];
-
-	newRoute.id = parseInt(req.params.id);
-	console.log(newRoute);
-	routes[req.params.id] = newRoute;
-	delete routesByPath[oldRoute.path];
-	routesByPath[newRoute.path] = newRoute;
-
-	route(newRoute);
+	routeContainer.put(req.params.id, newRoute);
 
 	res.status(200).send({message:'Ok'});
 });
@@ -139,20 +101,9 @@ app.delete('/routes/:id', function (req, res) {
 	
 	res.type('json');
 	
-	if (!routes[req.params.id]) {
-		let error = {};
-		error.message = "Route not found.";
-		res.status(404).send(error);
-		return;
-	}
+	routeContainer.delete(newRoute);
 
-	let oldRoute = routes[req.params.id];
-	delete routesByPath[oldRoute.path];
-	delete routes[req.params.id];
-
-	//delete route
-
-	res.status(200).send({message:'Ok'});
+	res.status(201).send({message:'deleted'});
 });
 
 setupProxy();
