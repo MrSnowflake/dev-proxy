@@ -21,27 +21,16 @@ let setupProxy = () => {
 	proxy.intercept({
 		phase: 'response'
 	}, function(req, resp, cycle) {
-		//console.log(req);
-		
 		let domainRoutes = routeContainer.getForDomain(req.hostname);
 		
 		if (domainRoutes) {
-			console.log('domainRoutes', req.hostname, domainRoutes);
 			for (var routePath in domainRoutes) {
 				var route = domainRoutes[routePath];
 				if (domainRoutes.hasOwnProperty(routePath) && req.url.match(route.path).length > 0) {
 					let filename = getFilename(req.url);
 					let file = path.join(route.localPath, filename);
-
-					console.log('send', file);
-					
-					fs.readFile(file, { encoding: 'utf-8' }, (err,data) => {
-						if (!err) {
-							resp.string = data;
-						} else {
-							console.log(err);
-						}
-					});
+								
+					return cycle.serve(file);
 				}
 			}
 		}
