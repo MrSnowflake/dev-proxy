@@ -5,13 +5,21 @@ var path = require('path');
 let hoxy = require('hoxy');
 let proxyServer = hoxy.createServer();
 
+const VERSION = '0.1';
+const BUILD = '0.1';
+
+console.log('SnowProxy', 'V' + VERSION);
+
+
 console.log('starting');
 
 let routeContainer = require('./route-container.js')();
 
 const getFilename = path => {
 	let segments = path.split('/');
-	return segments[segments.length - 1];
+	let filename = segments[segments.length - 1];
+
+	return filename.split('?')[0];
 }
 
 let setupProxy = () => {
@@ -29,8 +37,12 @@ let setupProxy = () => {
 				if (domainRoutes.hasOwnProperty(routePath) && req.url.match(route.path).length > 0) {
 					let filename = getFilename(req.url);
 					let file = path.join(route.localPath, filename);
-								
-					return cycle.serve(file);
+
+					try {
+						fs.accessSync(file, fs.R_OK);
+
+						return cycle.serve(file);
+					} catch (e) {}
 				}
 			}
 		}
