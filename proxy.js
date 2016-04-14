@@ -10,7 +10,6 @@ const BUILD = '0.1';
 
 console.log('SnowProxy', 'V' + VERSION);
 
-
 console.log('starting');
 
 let routeContainer = require('./route-container.js')();
@@ -59,7 +58,24 @@ var maxId = 0;
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(function (req, res, next) {
 
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
 app.get('/routes', function (req, res) {
 	let routesArray = [];
 	let routes = routeContainer.get();
@@ -71,6 +87,11 @@ app.get('/routes', function (req, res) {
 	}
 	
 	res.send(routesArray);
+});
+
+app.get('/routes/:id', function (req, res) {
+	res.type('json');
+	res.send(routeContainer.get(req.params.id));
 });
 
 /*
@@ -98,11 +119,9 @@ app.put('/routes/:id', function (req, res) {
 });
 
 app.delete('/routes/:id', function (req, res) {
-	let newRoute = req.body;
-	
 	res.type('json');
-	
-	routeContainer.delete(newRoute);
+
+	routeContainer.delete(req.params.id);
 
 	res.status(201).send({message:'deleted'});
 });
