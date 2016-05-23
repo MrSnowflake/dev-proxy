@@ -38,6 +38,7 @@ let setupProxy = () => {
 					let file = path.join(route.localPath, filename);
 
 					try {
+						console.log('Serving', file);
 						fs.accessSync(file, fs.R_OK);
 
 						return cycle.serve(file);
@@ -100,6 +101,8 @@ app.get('/routes/:id', function (req, res) {
 */
 app.post('/routes', function (req, res) {
 	let newRoute = req.body;
+
+	console.log('POST', newRoute);
 	
 	res.type('json');
 	
@@ -110,6 +113,8 @@ app.post('/routes', function (req, res) {
 
 app.put('/routes/:id', function (req, res) {
 	let newRoute = req.body;
+
+	console.log('PUT', newRoute);
 	
 	res.type('json');
 	
