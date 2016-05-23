@@ -28,6 +28,8 @@ let setupProxy = () => {
 	proxy.intercept({
 		phase: 'response'
 	}, function(req, resp, cycle) {
+		if (!routerEnabled) return;
+
 		let domainRoutes = routeContainer.getForDomain(req.hostname);
 		
 		if (domainRoutes) {
@@ -56,6 +58,8 @@ var bodyParser = require('body-parser');
 var routes = {};
 var routesByPath = {};
 var maxId = 0;
+
+var routerEnabled = true;
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -88,6 +92,20 @@ app.get('/routes', function (req, res) {
 	}
 	
 	res.send(routesArray);
+});
+
+app.put('/router', function (req, res) {
+	let body = req.body;
+
+	console.log(body);
+	if (body.enabled === true)
+		routerEnabled = true;
+	else if (body.enabled === false)
+		routerEnabled = false;
+	else
+		res.status(400).type('json').send({message:'invalid request'});
+
+	res.status(200).type('json').send({message:'Ok', status: routerEnabled});
 });
 
 app.get('/routes/:id', function (req, res) {
