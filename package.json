@@ -4,9 +4,13 @@
   "description": "Development proxy",
   "main": "proxy.js",
   "dependencies": {
-    "hoxy": "^1.2.4"
+    "hoxy": "3.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "expresso": "^0.9.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
