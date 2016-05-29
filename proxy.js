@@ -36,8 +36,15 @@ let setupProxy = () => {
 			for (var routePath in domainRoutes) {
 				var route = domainRoutes[routePath];
 				if (domainRoutes.hasOwnProperty(routePath) && req.url.match(route.path).length > 0) {
-					let filename = getFilename(req.url);
-					let file = path.join(route.localPath, filename);
+					let fileStat = fs.statSync(route.localPath);
+					let file = '';
+
+					if (fileStat.isFile()) {
+						file = route.localPath;
+					} else {
+						let filename = getFilename(req.url);
+						file = path.join(route.localPath, filename);
+					}
 
 					try {
 						console.log('Serving', file);
