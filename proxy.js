@@ -5,8 +5,8 @@ var path = require('path');
 let hoxy = require('hoxy');
 let proxyServer = hoxy.createServer();
 
-const VERSION = '0.1';
-const BUILD = '0.1';
+const VERSION = '0.2';
+const BUILD = '0.2';
 
 console.log('SnowProxy', 'V' + VERSION);
 
@@ -35,7 +35,8 @@ let setupProxy = () => {
 		if (domainRoutes) {
 			for (var routePath in domainRoutes) {
 				var route = domainRoutes[routePath];
-				if (domainRoutes.hasOwnProperty(routePath) && req.url.match(route.path).length > 0) {
+
+				if (domainRoutes.hasOwnProperty(routePath) && req.url.match(route.path)) {
 					let fileStat = fs.statSync(route.localPath);
 					let file = '';
 
