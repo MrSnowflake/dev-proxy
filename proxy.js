@@ -5,8 +5,8 @@ var path = require('path');
 let hoxy = require('hoxy');
 let proxyServer = hoxy.createServer();
 
-const VERSION = '0.1';
-const BUILD = '0.1';
+const VERSION = '0.2';
+const BUILD = '0.2';
 
 console.log('SnowProxy', 'V' + VERSION);
 
@@ -28,14 +28,24 @@ let setupProxy = () => {
 	proxy.intercept({
 		phase: 'response'
 	}, function(req, resp, cycle) {
+		if (!routerEnabled) return;
+
 		let domainRoutes = routeContainer.getForDomain(req.hostname);
 		
 		if (domainRoutes) {
 			for (var routePath in domainRoutes) {
 				var route = domainRoutes[routePath];
-				if (domainRoutes.hasOwnProperty(routePath) && req.url.match(route.path).length > 0) {
-					let filename = getFilename(req.url);
-					let file = path.join(route.localPath, filename);
+
+				if (domainRoutes.hasOwnProperty(routePath) && req.url.match(route.path)) {
+					let fileStat = fs.statSync(route.localPath);
+					let file = '';
+
+					if (fileStat.isFile()) {
+						file = route.localPath;
+					} else {
+						let filename = getFilename(req.url);
+						file = path.join(route.localPath, filename);
+					}
 
 					try {
 						console.log('Serving', file);
@@ -56,6 +66,8 @@ var bodyParser = require('body-parser');
 var routes = {};
 var routesByPath = {};
 var maxId = 0;
+
+var routerEnabled = true;
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -88,6 +100,20 @@ app.get('/routes', function (req, res) {
 	}
 	
 	res.send(routesArray);
+});
+
+app.put('/router', function (req, res) {
+	let body = req.body;
+
+	console.log(body);
+	if (body.enabled === true)
+		routerEnabled = true;
+	else if (body.enabled === false)
+		routerEnabled = false;
+	else
+		res.status(400).type('json').send({message:'invalid request'});
+
+	res.status(200).type('json').send({message:'Ok', status: routerEnabled});
 });
 
 app.get('/routes/:id', function (req, res) {
