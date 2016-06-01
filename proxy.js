@@ -160,5 +160,10 @@ app.delete('/routes/:id', function (req, res) {
 setupProxy();
 
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+	console.log('Example app listening on port 3000!');
+	var connect = require('connect');
+	var serveStatic = require('serve-static');
+	connect().use(serveStatic(__dirname + '/ui/')).listen(8080, function(){
+		console.log('Server running on 8080...');
+	});
 });
