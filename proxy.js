@@ -5,8 +5,8 @@ var path = require('path');
 let hoxy = require('hoxy');
 let proxyServer = hoxy.createServer();
 
-const VERSION = '0.2';
-const BUILD = '0.2';
+const VERSION = '0.3';
+const BUILD = '0.3';
 
 console.log('SnowProxy', 'V' + VERSION);
 
@@ -89,6 +89,7 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
+
 app.get('/routes', function (req, res) {
 	let routesArray = [];
 	let routes = routeContainer.get();
@@ -102,7 +103,11 @@ app.get('/routes', function (req, res) {
 	res.send(routesArray);
 });
 
-app.put('/router', function (req, res) {
+app.get('/router', function (req, res) {
+	res.status(200).type('json').send({enabled: routerEnabled});
+});
+
+app.post('/router', function (req, res) {
 	let body = req.body;
 
 	console.log(body);
@@ -113,7 +118,7 @@ app.put('/router', function (req, res) {
 	else
 		res.status(400).type('json').send({message:'invalid request'});
 
-	res.status(200).type('json').send({message:'Ok', status: routerEnabled});
+	res.status(200).type('json').send({message:'Ok', enabled: routerEnabled});
 });
 
 app.get('/routes/:id', function (req, res) {
@@ -160,5 +165,10 @@ app.delete('/routes/:id', function (req, res) {
 setupProxy();
 
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+	console.log('Example app listening on port 3000!');
+	var connect = require('connect');
+	var serveStatic = require('serve-static');
+	connect().use(serveStatic(__dirname + '/ui/')).listen(8080, function(){
+		console.log('Server running on 8080...');
+	});
 });
