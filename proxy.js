@@ -89,6 +89,7 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
+
 app.get('/routes', function (req, res) {
 	let routesArray = [];
 	let routes = routeContainer.get();

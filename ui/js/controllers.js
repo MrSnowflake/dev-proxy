@@ -1,77 +1,84 @@
-angular.module('DevProxy.controllers', [])
+(function(angular, undefined) {
+angular.module('DevProxy.controllers', ['ngMaterial'])
 
-.controller('RouterController', function($scope, Routes) {
-  var NEW = 'new';
-  var EDIT = 'edit';
+.controller('RouterController', function($scope, $mdDialog, $mdMedia, Routes, Router) {
+	var NEW = 'new';
+	var EDIT = 'edit';
 
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-  /*
-  $ionicModal.fromTemplateUrl('/templates/new-route.html', function(modal) {
-    $scope.routeModal = modal;
-  }, {
-    scope: $scope,
-    animation: 'slide-in-up'
-  });*/
+	$scope.router = Router.get();
+	$scope.routes = Routes.query();
 
-  $scope.routes = Routes.query();
+	$scope.changeRouterState = function() {
+		Router.save($scope.router, function() {
+			$scope.router = Router.get();
+		});
+	};
 
-  $scope.remove = function(route, $event) {
-    Routes.remove(route, function() {
-      $scope.routes = Routes.query();
-    });
-    $event.cancelBubble = true;
-    $event.returnValue = false;
-  };
+	$scope.remove = function(route, $event) {
+		Routes.remove(route, function() {
+			$scope.routes = Routes.query();
+		});
+		$event.cancelBubble = true;
+		$event.returnValue = false;
+	};
 
-  $scope.addRoute = function() {
-    $scope.routeModal.mode = NEW;
-    $scope.route = {};
-    $scope.newRoute = {};
-    $scope.routeModal.show();
-  };
+	function DialogController($scope, $mdDialog, route) {
+		$scope.hasRoute = !!route;
+		$scope.route = route;
 
-  $scope.edit = function(routeId) {
-    Routes.get({ id: routeId }, function(route) {
-      console.log(route);
-      $scope.routeModal.mode = EDIT;
-      $scope.route = angular.copy(route);
-      $scope.newRoute = angular.copy(route);
-      $scope.routeModal.show();
-    });
-  };
+		if (route) 
+			$scope.title = 'New Route';
+		else
+			$scope.title = 'Edit Route';
 
-  $scope.createRoute = function(route) {
-    var newRoute = {
-      path: route.path,
-      localPath: route.localPath,
-      domain: route.domain
-    };
+		$scope.hide = function() {
+			$mdDialog.hide();
+		};
+		$scope.cancel = function() {
+			$mdDialog.cancel();
+		};
+		$scope.add = function() {
+			console.log($scope.route);
 
-    if ($scope.routeModal.mode == NEW)
-      Routes.save(newRoute, function() {
-          $scope.routes = Routes.query();
-      });
-    else {
-      newRoute.id = route.id;
-      Routes.update(newRoute, function() {
-          $scope.routes = Routes.query();
-      });
-    }
+			if (hasRoute)
+				Routes.update($scope.route);
+			else
+				Routes.save($scope.route);
 
-    $scope.routeModal.hide();
+			$mdDialog.hide();
+		};
+	}
 
-    route.path = '';
-    route.localPath = '';
-    route.domain = '';
-  };
+	$scope.editRoute = function(route, ev) {
+		openRouteDialog(ev, route);
+	};
 
-  $scope.cancelRoute = function() {
-    $scope.routeModal.hide();
-  };
+	$scope.addRoute = function(ev) {
+		openRouteDialog(ev);
+	};
+
+	function openRouteDialog(ev, route) {
+		var useFullScreen = ($mdMedia('sm') || $mdMedia('xs')) && $scope.customFullscreen;
+		$mdDialog.show({
+				controller: DialogController,
+				templateUrl: 'addroute.tmpl.html',
+				parent: angular.element(document.body),
+				targetEvent: ev,
+				clickOutsideToClose: true,
+				fullscreen: useFullScreen,
+				locals: {
+					route: route
+				},
+				controller: DialogController
+			})
+			.then(function() {
+				$scope.routes = Routes.query();
+			});
+		$scope.$watch(function() {
+			return $mdMedia('xs') || $mdMedia('sm');
+		}, function(wantsFullScreen) {
+			$scope.customFullscreen = (wantsFullScreen === true);
+		});
+	};
 });
+})(angular);
