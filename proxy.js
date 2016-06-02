@@ -5,8 +5,8 @@ var path = require('path');
 let hoxy = require('hoxy');
 let proxyServer = hoxy.createServer();
 
-const VERSION = '0.2';
-const BUILD = '0.2';
+const VERSION = '0.3';
+const BUILD = '0.3';
 
 console.log('SnowProxy', 'V' + VERSION);
 
