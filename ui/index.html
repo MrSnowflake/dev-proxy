@@ -6,33 +6,30 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
 </head>
 <body ng-app="DevProxy">
-
-    <div ng-controller="RouterController">
-            <md-toolbar class="md-hue-2">
-              <div class="md-toolbar-tools">
+    <div ng-controller="RouterController" id="main">
+        <md-toolbar class="md-hue-2">
+            <div class="md-toolbar-tools">
                 <h2>
-                  <span>Dev Proxy</span>
+                    <span>Dev Proxy</span>
                 </h2>
                 <span flex></span>
-                <md-button class="md-icon-button" aria-label="Favorite">
-                  <md-icon md-svg-icon="img/icons/favorite.svg" style="color: greenyellow;"></md-icon>
+                <md-switch ng-model="router.enabled" aria-label="Proxy enabled" ng-change="changeRouterState()"></md-switch>
+                <md-button class="md-icon-button" aria-label="More" ng-click="addRoute()">
+                    <ng-md-icon icon="add" style="fill: white" />
                 </md-button>
-                <md-button class="md-icon-button" aria-label="More">
-                  <md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
-                </md-button>
+            </div>
+        </md-toolbar>
+        <md-content>
+          <md-list flex>
+            <md-subheader class="md-no-sticky">Routes</md-subheader>
+            <md-list-item class="md-2-line" ng-repeat="route in routes" ng-click="null">
+              <div class="md-list-item-text" layout="column">
+                <h3>{{ route.domain }}{{ route.path }}</h3>
+                <h3>{{ route.localPath }}</h3>
               </div>
-            </md-toolbar>
-            <md-content>
-              <md-list flex>
-                <md-subheader class="md-no-sticky">Routes</md-subheader>
-                <md-list-item class="md-2-line" ng-repeat="route in routes" ng-click="null">
-                  <div class="md-list-item-text" layout="column">
-                    <h3>{{ route.domain }}{{ route.path }}</h3>
-                    <h3>{{ route.localPath }}</h3>
-                  </div>
-                </md-list-item>
-              </md-list>
-            </md-list>
+            </md-list-item>
+          </md-list>
+        </md-list>
     </div>
 
     <script src="/bower_components/angular/angular.js"></script>
@@ -40,6 +37,7 @@
     <script src="/bower_components/angular-animate/angular-animate.js"></script>
     <script src="/bower_components/angular-resource/angular-resource.js"></script>
     <script src="/bower_components/angular-material/angular-material.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.7.0/angular-material-icons.min.js"></script> 
     <script src="/js/services.js"></script>
     <script src="/js/controllers.js"></script>
     <script src="/js/app.js"></script>
