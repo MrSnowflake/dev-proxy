@@ -1,0 +1,38 @@
+<md-dialog aria-label="Mango (Fruit)"  ng-cloak>
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>New route</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+          <md-input-container class="md-block">
+            <label>Url</label>
+            <input ng-model="route.url">
+          </md-input-container>
+          <md-input-container class="md-block">
+            <label>Local Path</label>
+            <input ng-model="route.localPath">
+          </md-input-container>
+          <md-input-container class="md-block">
+            <label>Domain</label>
+            <input ng-model="route.domain">
+          </md-input-container>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-click="cancel()">
+       Cancel
+      </md-button>
+      <md-button ng-click="add()">
+        Add
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
