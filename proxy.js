@@ -102,7 +102,11 @@ app.get('/routes', function (req, res) {
 	res.send(routesArray);
 });
 
-app.put('/router', function (req, res) {
+app.get('/router', function (req, res) {
+	res.status(200).type('json').send({enabled: routerEnabled});
+});
+
+app.post('/router', function (req, res) {
 	let body = req.body;
 
 	console.log(body);
@@ -113,7 +117,7 @@ app.put('/router', function (req, res) {
 	else
 		res.status(400).type('json').send({message:'invalid request'});
 
-	res.status(200).type('json').send({message:'Ok', status: routerEnabled});
+	res.status(200).type('json').send({message:'Ok', enabled: routerEnabled});
 });
 
 app.get('/routes/:id', function (req, res) {
