@@ -69,9 +69,11 @@ var maxId = 0;
 
 var routerEnabled = true;
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-app.use(function (req, res, next) {
+app.use(bodyParser.json()) // for parsing application/json
+	.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+	.use(function (req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader('X-Dev-Proxy', 'V' + VERSION);
 
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
