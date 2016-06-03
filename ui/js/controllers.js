@@ -40,7 +40,7 @@ angular.module('DevProxy.controllers', ['ngMaterial'])
 		$scope.add = function() {
 			console.log($scope.route);
 
-			if (hasRoute)
+			if ($scope.hasRoute)
 				Routes.update($scope.route);
 			else
 				Routes.save($scope.route);
