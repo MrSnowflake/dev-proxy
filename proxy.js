@@ -5,14 +5,17 @@ var path = require('path');
 let hoxy = require('hoxy');
 let proxyServer = hoxy.createServer();
 
-const VERSION = '0.9';
-const BUILD = '0.9';
+const VERSION = '1.0';
+const BUILD = '1.0';
+
+const FILENAME = './routes.json'
 
 console.log('SnowProxy', 'V' + VERSION);
 
 console.log('starting');
 
 let routeContainer = require('./route-container.js')();
+routeContainer.open(FILENAME);
 
 const getFilename = path => {
 	let segments = path.split('/');
@@ -140,6 +143,7 @@ app.post('/routes', function (req, res) {
 	res.type('json');
 	
 	routeContainer.add(newRoute);
+	routeContainer.save(FILENAME);
 
 	res.status(201).send({message:'Created'});
 });
@@ -152,6 +156,7 @@ app.put('/routes/:id', function (req, res) {
 	res.type('json');
 	
 	routeContainer.put(req.params.id, newRoute);
+	routeContainer.save(FILENAME);
 
 	res.status(200).send({message:'Ok'});
 });
@@ -160,6 +165,7 @@ app.delete('/routes/:id', function (req, res) {
 	res.type('json');
 
 	routeContainer.delete(req.params.id);
+	routeContainer.save(FILENAME);
 
 	res.status(201).send({message:'deleted'});
 });
