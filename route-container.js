@@ -1,8 +1,10 @@
 "use strict"
 
+var fs = require('fs');
+
 module.exports = () => {
-	const routeDomains = {};
-	const routesById = {};
+	let routeDomains = {};
+	let routesById = {};
 	let maxId = 0;
 	
 	const isNumber = n => {
@@ -40,6 +42,34 @@ module.exports = () => {
 	};
 
 	let self = {
+		open: (filename) => {
+			if (!filename)
+				throw 'Add the filename as parameter ' + filename;
+
+			routeDomains = JSON.parse(fs.readFileSync(filename, 'utf8'));
+
+			// fix routesById
+			for (let domain in routeDomains) {
+				if (!(routeDomains.hasOwnProperty(domain)))
+					continue;
+
+				var routeWithDomain = routeDomains[domain];
+				for (let path in routeWithDomain) {
+					if (!(routeWithDomain.hasOwnProperty(path)))
+						continue;
+
+					let route = routeWithDomain[path];
+
+					routesById[route.id] = route;
+				}
+			}
+		},
+		save: (filename) => {
+			if (!filename)
+				throw 'Add the filename as parameter'
+
+			fs.writeFileSync(filename, JSON.stringify(routeDomains, null, 2) , 'utf-8');
+		},
 		add: route => {
 			if (!isValidRoute(route))
 				throw "Invalid route";
