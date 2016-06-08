@@ -1,14 +1,12 @@
 {
   "name": "dev-proxy",
-  "version": "0.2.0",
-  "description": "Development proxy",
+  "version": "1.0.0",
+  "description": "Development proxy for front-end developers.",
   "main": "proxy.js",
   "dependencies": {
     "connect": "^3.4.1",
     "hoxy": "3.2.0",
-    "serve-static": "^1.10.3"
-  },
-  "devDependencies": {
+    "serve-static": "^1.10.3",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "expresso": "^0.9.2"
@@ -18,13 +16,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://Maarten.Krijn@git.amplexor.com/scm/~maarten.krijn/dev-proxy.git"
+    "url": "https://github.com/MrSnowflake/dev-proxy.git"
   },
   "keywords": [
     "nodejs",
     "javascript",
     "proxy"
   ],
-  "author": "Maarten Krijn",
+  "author": "Maarten Krijn <mrsnowflake@gmail.com>",
   "license": "MIT"
 }
