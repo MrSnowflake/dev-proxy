@@ -32,3 +32,4 @@ build/Release
 node_modules
 
 ui/bower_components
+tmp
