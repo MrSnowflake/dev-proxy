@@ -1,6 +1,6 @@
 {
   "name": "dev-proxy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Development proxy for front-end developers.",
   "main": "proxy.js",
   "dependencies": {

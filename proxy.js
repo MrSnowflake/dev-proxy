@@ -5,8 +5,8 @@ var path = require('path');
 let hoxy = require('hoxy');
 let proxyServer = hoxy.createServer();
 
-const VERSION = '1.0';
-const BUILD = '1.0';
+const VERSION = '1.0.1';
+const BUILD = '1.0.1';
 
 const FILENAME = './routes.json'
 
